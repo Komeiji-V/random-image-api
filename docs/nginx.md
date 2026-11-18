@@ -90,7 +90,9 @@ upstream random_image_api {
 }
 
 server {
-    listen 443 ssl http2;
+    # nginx 1.25.1+ 使用 http2 on；旧版本可改回 listen 443 ssl http2;
+    listen 443 ssl;
+    http2 on;
     server_name img.example.com;
 
     ssl_certificate     /etc/letsencrypt/live/img.example.com/fullchain.pem;

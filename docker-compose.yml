@@ -9,7 +9,8 @@ services:
     container_name: random-image-api
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      # 仅绑定本机，请通过 nginx 反代对外提供服务
+      - "127.0.0.1:5000:5000"
     volumes:
       # 只读挂载，容器侧无法修改/删除图片
       - ./images:/app/images:ro
@@ -19,5 +20,5 @@ services:
       CACHE_TTL: "10"
     # 容器内以 UID 1000 的 appuser 运行，宿主机目录需对 UID 1000 可读：
     #   chmod -R o+rX ./images
-    # 若宿主机用户不是 UID 1000，可取消下一行注释并以当前用户运行
-    # user: "${UID:-1000}:${GID:-1000}"
+    # 若宿主机用户不是 UID 1000，在 .env 中设置 APP_UID/APP_GID 后取消下一行注释
+    # user: "${APP_UID:-1000}:${APP_GID:-1000}"

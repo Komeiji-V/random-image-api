@@ -64,6 +64,8 @@ images/
 
 三种方式任选其一。图片统一放在宿主机的 `./images/` 目录（可建子目录作为频道）。
 
+> 默认端口只绑定 `127.0.0.1`，请通过 nginx 反代对外提供服务（见 [docs/nginx.md](docs/nginx.md)）。如需直接公网暴露 5000，请自行评估风险并把 `127.0.0.1:5000:5000` 改为 `5000:5000`。
+
 ### 方式一：本地构建镜像
 
 ```bash
@@ -73,7 +75,7 @@ cd random-image-api
 docker build -t random-image-api .
 
 docker run -d --name random-image-api --restart unless-stopped \
-  -p 5000:5000 \
+  -p 127.0.0.1:5000:5000 \
   -v "$PWD/images:/app/images:ro" \
   random-image-api
 ```
@@ -87,7 +89,7 @@ docker run -d --name random-image-api --restart unless-stopped \
 docker pull komeijiv/random-image-api:latest
 
 docker run -d --name random-image-api --restart unless-stopped \
-  -p 5000:5000 \
+  -p 127.0.0.1:5000:5000 \
   -v "$PWD/images:/app/images:ro" \
   komeijiv/random-image-api:latest
 ```
@@ -126,7 +128,7 @@ chmod -R o+rX ./images
 ```bash
 docker run -d --name random-image-api --restart unless-stopped \
   --user "$(id -u):$(id -g)" \
-  -p 5000:5000 \
+  -p 127.0.0.1:5000:5000 \
   -v "$PWD/images:/app/images:ro" \
   komeijiv/random-image-api:latest
 ```
@@ -190,7 +192,7 @@ Docker 已内置 `HEALTHCHECK`，`docker ps` 中可看到 `healthy` 状态。
 | `.webp` | `image/webp` |
 | `.gif` | `image/gif` |
 | `.bmp` | `image/bmp` |
-| `.tiff` | `image/tiff` |
+| `.tif` / `.tiff` | `image/tiff` |
 | `.avif` | `image/avif` |
 
 > **关于 AVIF**：Chrome 85+、Firefox 93+、Safari 16.4+（iOS 16.4+）均已支持。对于不支持的旧客户端，接口会根据 `Accept` 头自动跳过 AVIF 文件；如果某个频道里只有 AVIF 图片，旧客户端会收到 404 而不是破图。
@@ -215,6 +217,12 @@ IMAGE_FOLDER=./images CACHE_TTL=0 python3 app.py
 🔹 个人博客随机头图 / 随机插图（可按日间、夜间等主题分频道）  
 🔹 简单的图片存储与分发（无需数据库）  
 🔹 Docker 轻量级部署，本地或小型服务器均适用  
+
+---
+
+## 📄 License
+
+本项目基于 [GPL-3.0](LICENSE) 发布。
 
 ---
 
