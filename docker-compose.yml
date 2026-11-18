@@ -1,0 +1,23 @@
+# 随机图片 API 的 Docker Compose 配置
+# 使用：docker compose up -d --build
+# 图片目录：./images（可建子目录作为独立频道，如 ./images/day、./images/night）
+
+services:
+  random-image-api:
+    build: .
+    image: komeijiv/random-image-api:latest
+    container_name: random-image-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    volumes:
+      # 只读挂载，容器侧无法修改/删除图片
+      - ./images:/app/images:ro
+    environment:
+      IMAGE_FOLDER: /app/images
+      # 目录索引缓存秒数，0 表示每次请求都重新扫描
+      CACHE_TTL: "10"
+    # 容器内以 UID 1000 的 appuser 运行，宿主机目录需对 UID 1000 可读：
+    #   chmod -R o+rX ./images
+    # 若宿主机用户不是 UID 1000，可取消下一行注释并以当前用户运行
+    # user: "${UID:-1000}:${GID:-1000}"
